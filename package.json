@@ -2,8 +2,10 @@
   "name": "ngrx-command-line-logger",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
+    "start": "ts-node-dev --respawn ./src/index.ts",
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -15,5 +17,12 @@
   "bugs": {
     "url": "https://github.com/juanfran/ngrx-command-line-logger/issues"
   },
-  "homepage": "https://github.com/juanfran/ngrx-command-line-logger#readme"
+  "homepage": "https://github.com/juanfran/ngrx-command-line-logger#readme",
+  "devDependencies": {
+    "@angular/core": "^8.0.0",
+    "@ngrx/store": "^8.0.0",
+    "rxjs": "^6.4.0",
+    "ts-node-dev": "^1.0.0-pre.40",
+    "typescript": "^3.5.3"
+  }
 }
