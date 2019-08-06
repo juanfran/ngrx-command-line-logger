@@ -1,11 +1,11 @@
-# Ngrx Command line logger
+# Ngrx Command Line Logger
 
-Log in the terminal your project ngrx actions via websockets
+Print in the terminal your project NGRX actions via websockets.
 
 ### Installing
 
-```
-npm i --save-dev ngrx-command-line-logger
+```bash
+$ npm i --save-dev ngrx-command-line-logger
 ```
 
 ## Usage
@@ -45,5 +45,5 @@ export class AppModule { }
 
 Run the logger
 ```bash
-npx ngrx-cll --port 8080
+$ npx ngrx-cll --port 8080
 ```
