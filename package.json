@@ -4,7 +4,6 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "start": "ts-node-dev --respawn ./src/index.ts",
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -12,17 +11,30 @@
     "type": "git",
     "url": "git+https://github.com/juanfran/ngrx-command-line-logger.git"
   },
-  "author": "",
+  "author": "Juanfran Alcántara",
   "license": "ISC",
+  "bin": {
+    "ngrx-command-line-logger": "./bin/ngrx-command-line-logger",
+    "ngrx-cll": "./bin/ngrx-command-line-logger"
+  },
   "bugs": {
     "url": "https://github.com/juanfran/ngrx-command-line-logger/issues"
   },
+  "keywords": [
+    "ngrx",
+    "log",
+    "terminal"
+  ],
   "homepage": "https://github.com/juanfran/ngrx-command-line-logger#readme",
   "devDependencies": {
     "@angular/core": "^8.0.0",
     "@ngrx/store": "^8.0.0",
     "rxjs": "^6.4.0",
-    "ts-node-dev": "^1.0.0-pre.40",
     "typescript": "^3.5.3"
+  },
+  "dependencies": {
+    "@types/ws": "^6.0.2",
+    "chalk": "^2.4.2",
+    "ws": "^7.1.1"
   }
 }
