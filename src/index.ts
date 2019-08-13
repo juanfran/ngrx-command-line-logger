@@ -14,6 +14,10 @@ export const CommandLineLogger = (options: Options = {}) => {
       open = true;
     };
 
+    ws.onmessage = function (event) {
+      console.log(JSON.parse(event.data));
+    }
+
     return function(state, action) {
       const newState = reducer(state, action);
 

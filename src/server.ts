@@ -3,6 +3,47 @@ import chalk from 'chalk';
 import { diffString } from 'json-diff';
 import repl from 'repl';
 import util from 'util';
+import { Action } from '@ngrx/store';
+
+interface Message {
+  action: Action;
+  state: any,
+  newState: any,
+  diff: string
+}
+
+function deepLog(obj: {}) {
+  console.log(util.inspect(obj, {
+    showHidden: false,
+    depth: null,
+    colors: true,
+    compact: false
+  }));
+  // console.log(JSON.stringify(obj, null, 2));
+}
+
+const messages: Message[] = [];
+
+const globalContext = {
+  get history() {
+    return messages;
+  },
+  get last() {
+    return messages.slice(-1)[0];
+  },
+  get state() {
+    return this.last.newState;
+  },
+  client: function (message?: object) {
+    if(!message) {
+      sendClients(JSON.stringify(this.state));
+    } else {
+      sendClients(JSON.stringify(message));
+    }
+  },
+  log: deepLog
+};
+let replServer: repl.REPLServer;
 
 const args = process.argv.slice(2).reduce((prev, current, index, list) => {
   if (current.startsWith('--') && list[index + 1]) {
@@ -19,19 +60,11 @@ const args = process.argv.slice(2).reduce((prev, current, index, list) => {
   port: '8080'
 });
 
+const clients: WebSocket[] = [];
+
 const wss = new WebSocket.Server({
   port: parseInt(args.port, 10)
 });
-
-function deepLog(obj: {}) {
-  console.log(util.inspect(obj, {
-    showHidden: false,
-    depth: null,
-    colors: true,
-    compact: false
-  }));
-  // console.log(JSON.stringify(obj, null, 2));
-}
 
 function breakLine(lines = 1) {
   for(let i = 0; i < lines; i++) {
@@ -39,19 +72,20 @@ function breakLine(lines = 1) {
   }
 }
 
-let lastMessage:any = {
-  action: null,
-  state: null,
-  newState: null
-};
+function sendClients(msg: string) {
+  clients.forEach((client) => {
+    client.send(msg);
+  });
+}
 
 wss.on('connection', function connection(ws) {
   ws.on('message', function incoming(message: string) {
-    const obj: {
-      action: string;
-      state: any,
-      newState: any
-    } = JSON.parse(message);
+    const objMsg = JSON.parse(message);
+
+    const obj: Message = {
+      ...objMsg,
+      diff: diffString(objMsg.state, objMsg.newState)
+    };
 
     breakLine();
     console.log(chalk.bold.bgGreen(' Action '), ' ', new Date());
@@ -60,54 +94,35 @@ wss.on('connection', function connection(ws) {
     breakLine();
 
     console.log(chalk.bgHex('#FF8800').bold(' Diff '));
-    console.log(diffString(obj.state, obj.newState));
+    console.log(obj.diff);
 
     breakLine(2);
 
     replServer.displayPrompt();
 
-    lastMessage = obj;
+    messages.push(obj);
+
+    if (messages.length > 100) {
+      messages.shift();
+    }
   });
+
+  clients.push(ws);
 });
 
-const replServer = repl.start({
-  completer: (line: any) => {
-    const completions = [
-      '.old',
-      '.new',
-      '.exit'
-      // dispatch() TODO
-    ];
+function createReplServer() {
+  replServer = repl.start();
 
-    const hits = completions.filter(function(c) { return c.indexOf(line) == 0 });
+  Object.defineProperty(replServer.context, '$', {
+    configurable: false,
+    enumerable: true,
+    value: globalContext
+  });
 
-    return [hits.length ? hits : completions, line]
-  }
-});
+  replServer.on('exit', () => {
+    wss.close();
+    process.exit();
+  });
+}
 
-replServer.defineCommand('old', {
-  help: 'Old state',
-  action() {
-    this.clearBufferedCommand();
-    breakLine();
-    deepLog(lastMessage.state);
-    breakLine();
-    this.displayPrompt();
-  }
-});
-
-replServer.defineCommand('new', {
-  help: 'New state',
-  action() {
-    this.clearBufferedCommand();
-    breakLine();
-    deepLog(lastMessage.newState);
-    breakLine();
-    this.displayPrompt();
-  }
-});
-
-replServer.on('exit', () => {
-  wss.close();
-  process.exit();
-});
+createReplServer();

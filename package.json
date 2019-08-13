@@ -23,7 +23,8 @@
   "keywords": [
     "ngrx",
     "log",
-    "terminal"
+    "terminal",
+    "repl"
   ],
   "homepage": "https://github.com/juanfran/ngrx-command-line-logger#readme",
   "devDependencies": {
