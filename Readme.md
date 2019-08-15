@@ -2,6 +2,8 @@
 
 Print in the terminal your project NGRX actions via websockets.
 
+![Example action](img/inc.gif?raw=true "Example action")
+
 ### Installing
 
 ```bash
@@ -43,7 +45,26 @@ metaReducers.push(CommandLineLogger({
 export class AppModule { }
 ```
 
-Run the logger
+Run the repl logger
 ```bash
 $ npx ngrx-cll --port 8080
 ```
+
+## REPL
+
+`$.client({})`: Send an object to the client devtools.
+
+```bash
+> $.client($.history)
+> $.client() // last state
+```
+
+![Example client command](img/client.gif?raw=true "Example client command")
+
+`$.history`: Last 100 entries (state, action & diff).
+
+`$.last`: Last entry.
+
+`$.state`: Current state.
+
+`$.log({})`: Deep JSON log. Example: `$.log($.state)`
