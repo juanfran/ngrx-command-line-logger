@@ -28,7 +28,7 @@
   ],
   "homepage": "https://github.com/juanfran/ngrx-command-line-logger#readme",
   "devDependencies": {
-    "@angular/core": "^8.0.0",
+    "@angular/core": "^11.0.5",
     "@ngrx/store": "^8.0.0",
     "rxjs": "^6.4.0",
     "typescript": "^3.5.3"
